@@ -809,17 +809,18 @@
             event.target.reset();
         }
 
-        // 5. Manejo del Registro (Sign Up)
+        // 5. Manejo del Registro (Sign Up) conectado a tu túnel de NGROK
         async function handleSignUp(event) {
             event.preventDefault();
+
+            const BACKEND_URL = 'https://backup-roulette-unrated.ngrok-free.dev'; 
 
             const identifier = document.getElementById('identifier').value;
             const password = document.getElementById('signup-password').value;
             const messageDiv = document.getElementById('signup-message');
 
             try {
-                // Petición hacia tu servidor Express (Node.js)
-                const response = await fetch('/api/signup', {
+                const response = await fetch(`${BACKEND_URL}/api/signup`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
