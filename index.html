@@ -804,47 +804,84 @@
         }
 
         // 4. Formulario de Contacto
-        function handleFormSubmit(event) {
-            event.preventDefault();
-            alert('¡Gracias por escribirnos! Tu mensaje ha sido enviado correctamente.');
-            event.target.reset();
+       // 5. Conexión con el backend (ngrok -> MySQL)
+// Si reinicias ngrok (plan gratis), la URL cambia: actualízala aquí.
+const BACKEND_URL = 'https://backup-roulette-unrated.ngrok-free.dev';
+
+const API_HEADERS = {
+    'Content-Type': 'application/json',
+    'ngrok-skip-browser-warning': 'true'
+};
+
+async function handleSignUp(event) {
+    event.preventDefault();
+
+    const identifier = document.getElementById('identifier').value;
+    const password = document.getElementById('signup-password').value;
+    const messageDiv = document.getElementById('signup-message');
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+
+    submitBtn.disabled = true;
+
+    try {
+        const response = await fetch(`${BACKEND_URL}/api/signup`, {
+            method: 'POST',
+            headers: API_HEADERS,
+            body: JSON.stringify({ identifier, password })
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+            messageDiv.style.color = '#3fb950';
+            messageDiv.textContent = '¡Cuenta creada con éxito! Ya puedes iniciar sesión.';
+            document.getElementById('signup-form').reset();
+        } else {
+            messageDiv.style.color = '#f85149';
+            messageDiv.textContent = data.message || 'Error al registrarse.';
         }
+    } catch (error) {
+        console.error('Error:', error);
+        messageDiv.style.color = '#f85149';
+        messageDiv.textContent = 'Error de conexión con el servidor.';
+    } finally {
+        submitBtn.disabled = false;
+    }
+}
 
-        // 5. Manejo del Registro (Sign Up) conectado a tu túnel de NGROK
-        async function handleSignUp(event) {
-            event.preventDefault();
+async function handleSignIn(event) {
+    event.preventDefault();
 
-            const BACKEND_URL = 'https://backup-roulette-unrated.ngrok-free.dev'; 
+    const identifier = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+    const messageDiv = document.getElementById('signin-message');
+    const submitBtn = event.target.querySelector('button[type="submit"]');
 
-            const identifier = document.getElementById('identifier').value;
-            const password = document.getElementById('signup-password').value;
-            const messageDiv = document.getElementById('signup-message');
+    submitBtn.disabled = true;
 
-            try {
-                const response = await fetch(`${BACKEND_URL}/api/signup`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ identifier, password })
-                });
+    try {
+        const response = await fetch(`${BACKEND_URL}/api/login`, {
+            method: 'POST',
+            headers: API_HEADERS,
+            body: JSON.stringify({ identifier, password })
+        });
+        const data = await response.json();
 
-                const data = await response.json();
-
-                if (response.ok) {
-                    messageDiv.style.color = '#3fb950'; // Verde
-                    messageDiv.textContent = '¡Cuenta creada con éxito! Ya puedes iniciar sesión.';
-                    document.getElementById('signup-form').reset();
-                } else {
-                    messageDiv.style.color = '#f85149'; // Rojo
-                    messageDiv.textContent = data.message || 'Error al registrarse.';
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                messageDiv.style.color = '#f85149';
-                messageDiv.textContent = 'Error de conexión con el servidor.';
-            }
+        if (response.ok) {
+            messageDiv.style.color = '#3fb950';
+            messageDiv.textContent = '¡Bienvenido!';
+            document.getElementById('signin-form').reset();
+        } else {
+            messageDiv.style.color = '#f85149';
+            messageDiv.textContent = data.message || 'Credenciales incorrectas.';
         }
+    } catch (error) {
+        console.error('Error:', error);
+        messageDiv.style.color = '#f85149';
+        messageDiv.textContent = 'Error de conexión con el servidor.';
+    } finally {
+        submitBtn.disabled = false;
+    }
+}
     </script>
 </body>
 </html>
