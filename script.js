@@ -162,3 +162,37 @@ async function handleSignIn(event) {
         submitBtn.disabled = false;
     }
 }
+// 6. Sesión (Sign In / Sign Out)
+function updateAuthUI() {
+    const user = sessionStorage.getItem('mccainUser');
+    const signinBtn = document.getElementById('btn-signin');
+    const signupBtn = document.getElementById('btn-signup');
+    const signoutBtn = document.getElementById('btn-signout');
+
+    if (user) {
+        signinBtn.style.display = 'none';
+        signupBtn.style.display = 'none';
+        signoutBtn.style.display = 'inline-block';
+        signoutBtn.textContent = `Sign Out (${user})`;
+    } else {
+        signinBtn.style.display = 'inline-block';
+        signupBtn.style.display = 'inline-block';
+        signoutBtn.style.display = 'none';
+    }
+}
+
+function signOut() {
+    sessionStorage.removeItem('mccainUser');
+    updateAuthUI();
+
+    // Volver a la pestaña principal
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('consolas').classList.add('active');
+    document.querySelector('.tab-btn').classList.add('active');
+
+    alert('Sesión cerrada.');
+}
+
+// Revisa si ya había sesión al cargar la página
+document.addEventListener('DOMContentLoaded', updateAuthUI);
